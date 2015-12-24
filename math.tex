@@ -1,0 +1,167 @@
+\documentclass[11pt]{article}
+\RequirePackage[l2tabu, orthodox]{nag}
+\RequirePackage{fullpage}
+\RequirePackage{amsmath,amssymb,amsthm}
+\RequirePackage{graphicx}
+\RequirePackage{bm}
+\RequirePackage{bbm}
+\RequirePackage{mathrsfs}
+\RequirePackage[citestyle=authoryear,maxbibnames=9,maxcitenames=2,backend=biber,natbib=true]{biblatex}
+\RequirePackage[x11names, rgb]{xcolor}
+\RequirePackage{todonotes}
+\RequirePackage{tikz}
+\usetikzlibrary{decorations,arrows,shapes}
+\RequirePackage[colorlinks=true]{hyperref}
+
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\cov}{cov}
+
+\addbibresource{biblio.bib}
+
+\title{Math Notes}
+
+\author{Vince Buffalo}
+
+\begin{document}
+\maketitle
+
+\section{Markov Chains}
+
+\section{Discrete Stochastic Processes}
+
+We have an $n \times n$ probability transition matrix $P$, which projects a
+vector of state probabilities $v$ to $vP$. We can gain an intuitive feeling for
+what this means by looking at a single element of $v$. Let's say that $v_i(t)$
+is the probability a discrete stochastic system is in state $i$ at time $t$. If
+we want to know the probability that the system is in state $j$ at time $t +
+1$, we can get to this state by using the following conditioning statement:
+
+
+\subsection{Absorbing Chains}
+
+With a transition matrix $P$, we can find a permutation matrix $M$ that
+permutes rows and columns (e.g. $M P M^T$) such that $P$ is organized into a
+block matrix:
+
+$$
+P = \begin{pmatrix}
+  I & 0 \\
+  R & Q \\
+\end{pmatrix}
+$$
+
+where $I$ is an identity matrix of absorbing states, $Q$ contains transitions
+from non-absorbing to non-absorbing states, and $R$ contains transitions from
+non-absorbing to absorbing states. Note that the $0$ matrix contains the
+transitions from absorbing states to non-absorbing states, which are
+necessarily all zero.
+
+$$
+P^2 = \begin{pmatrix}
+  I & 0 \\
+  R & Q \\
+\end{pmatrix}
+\begin{pmatrix}
+  I & 0 \\
+  R & Q \\
+\end{pmatrix} = 
+\begin{pmatrix}
+  I & 0 \\
+  R + QR & Q^2\\
+\end{pmatrix}
+$$
+
+In general:
+
+$$
+P^t = \begin{pmatrix}
+  I & 0 \\
+  (I + Q + Q^2 + \ldots + Q^t)R & Q^t \\
+\end{pmatrix}
+$$
+
+Note that since the row of $Q$ all sum to a value less than one (since
+transitions from non-absorbing states to absorbing are excluded), the dominant
+eigenvalue of $Q$, $\lambda_1 < 1$, so the system shrinks. Thus, $t \rightarrow
+\infty$, $Q^t \rightarrow 0$. Thus:
+
+
+$$
+P^\infty = \begin{pmatrix}
+  I & 0 \\
+  NR & 0 \\
+\end{pmatrix}
+$$
+
+where $N = (I + Q + Q^2 + Q^3 + \ldots)$; this is called the \emph{fundamental
+matrix}.
+
+
+\subsubsection{The Fundamental Matrix, and Expected Time until Absorption}
+
+One property of interest of an absorbing matrix chain is how may times it
+visits a state $j$ (given it starts in state $i$) before being absorbed. This
+information is available via fundamental matrix described above. We'll cover
+two ways of deriving this result.
+
+First, if $S_{i,j}$ is a random variable for the number of visits to $j$
+starting from $i$. We can think of $S_{i,j}$ as the sum of indicator variables
+that the chain enters non-absorbing state $j$ at time $k$ starting from state
+$i$, e.g.:
+
+$$
+S_{i,j} = \mathbbm{1}_{\{X(0) = j | X(0) = i\}} + \mathbbm{1}_{\{X(1) = j | X(0) = i\}} + \mathbbm{1}_{\{X(2) = j | X(0) = i\}} + \ldots
+$$
+
+$$
+\E[S_{i,j}] = \sum_{k=0}^\infty \E[\mathbbm{1}_{\{X(k) = j | X(0) = i\}}]
+$$
+
+by the fact that $\E[\mathbbm{1}_A] = P(A)$ (what Joe Blitzstein calls ``the
+fundamental bridge"):
+
+$$
+\E[S_{i,j}] = \sum_{k=0}^\infty P(X(k) = j | X(0) = i)
+$$
+
+Note that $P(X(0) = j | X(0) = i) = 1$, and this is if and only if $i = j$;
+intuitively, this is because the chain starts in state $i$ and we're counting
+the expected number of visits to $j=i$.
+
+From the general theory of Markov chains, we know that the probability a chain
+transitions from state $i$ to $j$ in $k$ steps ($P(X(k) = j | X(0) = i$) is the
+  $(i, j)$ entry of the matrix $Q^k$. For all states $i, j$ in the sample
+  space, we can express the expected number of visits before absorption in a
+  matrix $N$:
+
+$$
+N = \sum_{k=0}^{\infty} Q^k
+$$
+
+Where $N$ is a matrix containing entries $N_{i,j} = \E[S_{i,j}]$.
+
+Note that $N$ is an infinite sum,
+
+$$
+N = I + Q + Q^2 + Q^3 + \ldots
+$$
+
+Which we can express: 
+
+$$
+N = I + QN
+$$
+
+$$
+N = (I - Q)^{-1}
+$$
+
+
+
+
+
+\printbibliography
+
+\end{document}
