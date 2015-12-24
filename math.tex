@@ -29,6 +29,7 @@
 
 \section{Markov Chains}
 
+
 \section{Discrete Stochastic Processes}
 
 We have an $n \times n$ probability transition matrix $P$, which projects a
@@ -106,7 +107,7 @@ visits a state $j$ (given it starts in state $i$) before being absorbed. This
 information is available via fundamental matrix described above. We'll cover
 two ways of deriving this result.
 
-First, if $S_{i,j}$ is a random variable for the number of visits to $j$
+\paragraph{Expectation approach} First, if $S_{i,j}$ is a random variable for the number of visits to $j$
 starting from $i$. We can think of $S_{i,j}$ as the sum of indicator variables
 that the chain enters non-absorbing state $j$ at time $k$ starting from state
 $i$, e.g.:
@@ -158,6 +159,33 @@ $$
 N = (I - Q)^{-1}
 $$
 
+\paragraph{Recursive approach} 
+
+Alternatively, we can find this same formulation through a recursive approach.
+We note that the expected number of times state $i$ is visited (starting from
+state $i$) can be written as:
+
+$$
+N_{i,i} = 1 + \sum_k N_{i,k} Q_{k,i}
+$$
+
+where $k$ is all non-absorbing states. First, since the chain is initially in
+state $i$, $N_{i,i}$ is incremented. Then, for each of these non-absorbing
+states $k$ the chain will occupy, the probability it shifts to the state $i$ is
+$Q_{k,i}$. More generally, we write:
+
+$$
+N_{i,j} = \delta_{ij} + \sum_k N_{i,k} Q_{k,j}
+$$
+
+\paragraph{Expected number of periods before absorption} 
+
+With our fundamental matrix $N$, we can find the expected number of time spent
+in \emph{any} non-absorbing state by summing over over these non-absorbing states:
+
+$$
+\E[S_i] = \sum_j N_{i,j}
+$$
 
 
 
