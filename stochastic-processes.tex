@@ -18,7 +18,7 @@
 \DeclareMathOperator{\var}{var}
 \DeclareMathOperator{\cov}{cov}
 
-\addbibresource{biblio.bib}
+\addbibresource{stoch.bib}
 
 \title{Math Notes}
 
@@ -27,17 +27,151 @@
 \begin{document}
 \maketitle
 
+
+% Thinking about markov chains as accounting of netflow in and netflow out of a
+% state. We should be able to solve it this way too. Reccurence relations as
+% infinite sums (well, over t-> N)
+% 
+% popgen stuff:
+%  - infinite population limit -> modeling frequencies
+%  - rescaling time
+
+\section{Generating Functions}
+
+Generating functions encode a sequence of numbers, $a_0, a_1, a_2, \ldots$. A
+\emph{generating function} $A(s)$ is a series:
+
+\begin{align*}
+  A(s) &= a_0 + a_1 s + a_2 s^2 + \ldots\\
+  A(s) &= \sum_{k=0}^\infty a_k s^k
+\end{align*}
+
+This converges for $|s| < 1$, but we aren't explicitly interested in
+convergence. As Wilf says in \citep{wilf2013generatingfunctionology}, ``we can
+think of a generating function as only a formal power series, i.e., as an
+algebraic object rather than as an analytic one."
+
+Generating functions are tremendously useful as they encode a sequence of
+numbers in a function, which can then be easily manipulated. 
+
+\subsection{Probability Generating Functions}
+
+We can use generating functions to encode probabilities:
+
+\begin{align*}
+  P(s) &= p_0 + p_1 s + p_2 s^2 + \ldots\\
+  P(s) &= \E[s^X]\\
+\end{align*}
+
+where $\P(X = k) = p_k$. This is a \emph{probability generation function} and
+it's useful for calculating quantities expectations and sums of random
+variables. As with generating functions, we're not explicitly interested in
+convergence, but rather in manipulating the encoded sequence as a function.
+
+For example, we can find the expected value $\E[X]$ by taking the first
+derivative of $P(s)$:
+
+\begin{align*}
+  P'(s) &= p_1 + p_2 s + 2 p_3 s^2 + \ldots\\
+  P'(s) &= \sum_{k = 1} k p_k s^{k-1}
+\end{align*}
+
+By setting $s=1$, this formally reduces to $\sum k p_k$, which we recognize as
+the expectation of $X$, $\E[X] = \sum k p_k$. Thus, we say:
+
+\begin{align*}
+  \label{eq:gen-func-thm-01}
+    \E[X] = P'(1) 
+\end{align*}
+
+\subsection{Convolutions}
+
+Convolutions are incredibly useful throughout the theory of probability and
+stochastic processes, and are a terrific of example of how generating functions
+are useful. For example, the sum of two discrete random variables $Z = X + Y$
+has a PMF defined by:
+
+$$
+\P(Z = z) = \P(X + Y = z) = \sum_{k=0}^z P(X=k) P(Y=z-k)
+$$
+
+Intuitively, the event $Z=z$ can happen many different ways, and the equation
+above enumerates all these possible ways. For example, if $Z=2$, this could
+occur if $X=0$ and $Y=2$, $X=1$ and $Y=1$, or $X=2$ and $Y=0$. The sum above is
+a \emph{convolution}. For generating functions $A(s)$ and $B(s)$ of random
+variables $X$ and $Y$ respectively, the generating function of their
+convolution is:
+
+\begin{align*}
+  C(s) &= A(s)B(s) = \sum_{k=0}^\infty a_k s^k \cdot \sum_{k=0}^\infty b_k s^k \\
+  C(s) &= ( a_0 + a_1 s + a_2 s^2 + \ldots ) (b_0 + b_1 s + b_2 s^2 + \ldots)\\
+  C(s) &= \sum_{k=0}^\infty \left( \sum_{j=0}^k a_j b_{k-j} \right) s^k
+\end{align*}
+
+or,
+
+$$
+C(s) = \sum_{k=0}^\infty c_n s^k
+$$
+
+where
+
+$$
+c_n = \sum_{j=0}^k a_j b_{k-j}
+$$
+
+Thus, the PMF of $Z$ has the probability generating function $C(s)$.
+
+Generating functions are also used to tackle problems like recurrence equations
+and enumerate problems in combinatorics; see
+\citep{wilf2013generatingfunctionology} for a full treatment on generating
+functions.
+
+\section{Recurrent Events}
+
+
+
+
+
+
 \section{Markov Chains}
 
+Beauty of markov chains: 
 
-\section{Discrete Stochastic Processes}
+superficially: eigenvalue eigenvector decomp for purely computational reasons, e.g. $P^n$. 
 
-We have an $n \times n$ probability transition matrix $P$, which projects a
-vector of state probabilities $v$ to $vP$. We can gain an intuitive feeling for
-what this means by looking at a single element of $v$. Let's say that $v_i(t)$
-is the probability a discrete stochastic system is in state $i$ at time $t$. If
-we want to know the probability that the system is in state $j$ at time $t +
-1$, we can get to this state by using the following conditioning statement:
+But then, how this relates algebraically to things
+
+probability and LIMIT consequences.
+
+\paragraph{Eigenvalues and Perron-Frobenius}
+
+Stochastic matrices must have an eigenvalue $\lambda_1 = 1$ and corresponding
+eigenvector $v_1 = \mathbf{1}$. Why? Each row of a right stochastic matrix must
+sum to one (in other words, rows of stochastic matrices need to follow the
+second axiom or probability: unit measure):
+
+$$
+\sum_{j} M_{i,j} = 1
+$$
+
+Alternatively, we can express this in matrix form:
+
+$$
+\mathbf{1}^T \mathbf{M} = \mathbf{1}^T
+$$
+
+which makes it clear that 1 is a left eigenvalue of $\mathbf{M}$ since an left
+eigenvalue is some $\lambda$ such that $\mathbf{v} \mathbf{A} = \lambda
+\mathbf{v}$. 
+
+Furthermore, this eigenvalue $\lambda_1$ is the dominant
+eigenvalue, $\lambda_i < 1, i \ne 1$.
+
+% TODO: PF
+
+\section{Ergodic Theorems and Stationary Distributions}
+
 
 
 \subsection{Absorbing Chains}
